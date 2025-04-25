@@ -1,5 +1,7 @@
-# enhanced-FaRnRYtrain
-An optimized training algorithm based on YOLOv12, ResNet, FlashAttention, and Supervised Contrastive Learning
+# 2025054711 - 基于大规模多尺度特征增强的脑瘤自动检测模型
+An optimized training algorithm based on GCN， ResNet, FlashAttention, and Supervised Contrastive Learning
+
+一个基于残差网络，快速注意力集中机制，自监督的对比学习的优化GCN模型算法
 
 ## Step 1: Fetch the code
 
