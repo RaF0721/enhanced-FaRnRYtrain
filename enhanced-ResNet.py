@@ -53,11 +53,11 @@ class ContrastiveYOLOResNet(nn.Module):
         return projection
 
 
-model = YOLO("yolov12l.pt")
+model = YOLO("Pre-Training.model")
 contrastive_model = ContrastiveYOLOResNet(resnet_type='resnet50')
 
 train_config = {
-    'data': '../datasets/BrainTumor/BrainTumorYolov11/data.yaml',
+    'data': 'PATG_TO_YOUR_DATASET',
     'epochs': 450,
     'batch': 48,
     'imgsz': 640,
@@ -115,5 +115,4 @@ def train_with_supcontrast():
 
 if __name__ == "__main__":
     train_with_supcontrast()
-
     metrics = model.val()
