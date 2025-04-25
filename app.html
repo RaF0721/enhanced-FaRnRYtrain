@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YOLO Image Processor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .upload-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .image-preview {
+            position: relative;
+            margin: 20px 0;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        img {
+            max-width: 100%;
+            border-radius: 4px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: none; /* 初始隐藏 */
+        }
+
+        .loading {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            border-radius: 4px;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .error {
+            color: #ff4444;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-section">
+        <h1>YOLO 图像识别</h1>
+
+        <!-- 文件上传区域 -->
+        <div class="input-group">
+          <input type="file" class="form-control" id="imageInput" accept="image/*" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+          <button class="btn btn-outline-secondary" type="button" onclick="processImage()" id="processBtn">上传图片</button>
+        </div>
+<!--        <div>-->
+<!--            <input type="file" >-->
+<!--            <button >Process Image</button>-->
+<!--        </div>-->
+
+        <!-- 加载提示 -->
+        <div class="loading" id="loading">请稍候...</div>
+
+        <!-- 错误提示 -->
+        <div class="error" id="error"></div>
+    </div>
+
+    <!-- 结果展示区域 -->
+    <div class="image-preview">
+        <h2>图像预览:</h2>
+        <img id="resultImage" alt="Processed result">
+    </div>
+
+    <script>
+        async function processImage() {
+            const fileInput = document.getElementById('imageInput');
+            const processBtn = document.getElementById('processBtn');
+            const loading = document.getElementById('loading');
+            const resultImage = document.getElementById('resultImage');
+            const errorDiv = document.getElementById('error');
+
+            // 重置状态
+            errorDiv.textContent = '';
+            resultImage.style.display = 'none';
+
+            // 验证文件
+            if (!fileInput.files || fileInput.files.length === 0) {
+                errorDiv.textContent = '请先上传图片!';
+                return;
+            }
+
+            const file = fileInput.files[0];
+
+            try {
+                // 显示加载状态
+                processBtn.disabled = true;
+                loading.style.display = 'block';
+
+                // 创建 FormData
+                const formData = new FormData();
+                formData.append('file', file);
+
+                // 发送请求
+                const response = await fetch('http://localhost:8000/upload/', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                // 处理响应
+                if (!response.ok) {
+                    const error = await response.text();
+                    throw new Error(`Server error: ${error}`);
+                }
+
+                // 转换为 Blob
+                const blob = await response.blob();
+                const imageUrl = URL.createObjectURL(blob);
+
+                // 显示结果
+                resultImage.src = imageUrl;
+                resultImage.style.display = 'block';
+            } catch (error) {
+                console.error('Processing failed:', error);
+                errorDiv.textContent = `Error: ${error.message}`;
+            } finally {
+                // 重置状态
+                processBtn.disabled = false;
+                loading.style.display = 'none';
+            }
+        }
+
+        // 实时预览选中的图片（可选）
+        document.getElementById('imageInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('resultImage').src = e.target.result;
+                    document.getElementById('resultImage').style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>
