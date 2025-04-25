@@ -124,7 +124,7 @@ Label.txt
 
 config.yaml
 ```Bash
-# YOLOv10 Dataset Config
+# Dataset Config
 path: ../dataset
 train: images/train
 val: images/val
@@ -174,7 +174,7 @@ Epoch   gpu_mem       box_loss    cls_loss    dfl_loss
 ```
 
 **Wait patiently for the training to complete. Upon finishing, the model will output evaluation metrics**
-
+For example
 ```text
 YOLOv12s summary (fused): 352 layers, 9,232,041 parameters, 0 gradients, 21.2 GFLOPs
                  Class     Images  Instances      Box(P          R      mAP50  mAP50-95): 100%|██████████| 21/21 [00:07<00:00,  2.67it/s]
